@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<!DOCTYPE xml>
+<odoo>
+
+    <record id="estate_property_action" model="ir.actions.act_window">
+        <field name="name">Pagina principal</field>
+        <field name="res_model">estate.property</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem id="estate_property_custom_root" name="Real Estate"/>
+    <menuitem id="menu_estate_advertisement" parent="estate_property_custom_root" name="Propiedades"/>
+    <menuitem id="menu_estate_property_action" parent="menu_estate_advertisement" action="estate_property_action"/>
+    <menuitem id="menu_estate_property_type" parent="estate_property_custom_root" name="Configuracion"/>
+    <menuitem id="menu_estate_property_type_action" parent="menu_estate_property_type" action="action_estate_property_type_tree" name="Tipos"/>
+    <menuitem id="menu_estate_property_tag_action" parent="menu_estate_property_type" action="action_estate_property_tag_tree" name="Etiquetas"/>
+    <!-- <menuitem id="menu_estate_property_offer_action" parent="menu_estate_property_type" action="action_estate_property_offer_tree" name=""/> -->
+
+    <record id="estate_property_search_action" model="ir.ui.view">
+        <field name="name">estate.property.search.action</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <search string="Buscar">
+                <field name="name" string="Casa"/>
+                <field name="postcode" string="Codigo postal"/>
+                <field name="expected_price" string="Precio esperado"/>
+                <field name="bedrooms" string="Dormitorio"/>
+                <field name="living_area" string="Sala de estar"/>
+                <field name="facades" string="Fachada"/>
+                <field name="property_type_id" string="Nuevo tipo"/>
+                <separator/>
+                <filter string="Achivados" name="active" domain="[('active','=', False )]"/>
+                <filter string="Estado" name="state" domain="['|',('state','=','New'),('state','=','offerReceived')]"/>
+                <group expand="1" string="Group by">
+                    <filter string="Post Code" name="postcode" context="{'group_by':'postcode'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="estate_property_tree_action" model="ir.ui.view">
+        <field name="name">estate.property.tree.action</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <tree string="Propiedad inmobiliaria">
+                <field name="name"/>
+                <field name="property_type_id"/>
+                <field name="postcode"/>
+                <field name="bedrooms"/>
+                <field name="living_area"/>
+                <field name="expected_price"/>
+                <field name="selling_price"/>
+                <field name="date_availability"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="estate_property_form_action" model="ir.ui.view">
+        <field name="name">estate.property.form.action</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <form string="Formulario">
+                <header>
+                    <button name="sold_property" type="object" string="Vender"/>                
+                    <button name="canceled_property" type="object" string="Cancelar"/>                
+                </header>
+                <sheet>
+                    <field name="name"/>
+                    <group>
+                        <group>
+                            <field name="postcode"/>
+                            <field name="date_availability"/>
+                            <field name="state"/>
+                        </group>
+                        <group>
+                            <field name="expected_price"/>
+                            <field name="selling_price"/>    
+                            <field name="best_offer"/>    
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Descripcion">
+                            <group>
+                                <group>
+                                    <field name="description"/>
+                                    <field name="bedrooms"/>
+                                    <field name="property_type_id"/>
+                                    <field name="living_area"/>
+                                    <field name="facades"/>
+                                </group>
+                                <group>
+                                    <field name="garage"/>
+                                    <field name="garden"/>
+                                    <field name="garden_area"/>
+                                    <field name="garden_orientation"/>
+                                    <field name="total_area"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Ofertas">
+                            <group>
+                                <field name="offer_ids" widget="one2many_tags"/>
+                            </group>
+                        </page>
+                        <page string="Informacion extra">
+                            <group>
+                                <field name="salesperson_id"/>
+                                <field name="buyer_id"/>
+                                <field name="tag_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
