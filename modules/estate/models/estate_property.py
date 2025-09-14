@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 class Estate_Property(models.Model):
     _name = 'estate.property'
     _description = 'Real Estate Property'
+    _order = 'id desc'
 
     name = fields.Char(string='Propiedad',
         required=True,
@@ -27,11 +28,14 @@ class Estate_Property(models.Model):
                                string="Etiqueta",
                                copy=False
                                )
+    
+    is_sold_canceled = fields.Boolean(string='sold_canceled', default=False)
+    
 
     offer_ids = fields.One2many('estate.property.offer',
                                 inverse_name='property_id',
                                 string="Oferta",
-                                copy=False
+                                copy=False,
                                 )
 
     salesperson_id = fields.Many2one('res.users',
@@ -51,9 +55,9 @@ class Estate_Property(models.Model):
                                  copy=False)
 
     bedrooms = fields.Integer(string='Dormitorios', default=2)
-    living_area = fields.Integer(string='Sala de estar (m)')
+    living_area = fields.Integer(string='Area habitable (m)')
     facades = fields.Integer(string='Fachada')
-    garage = fields.Boolean(string='Garaje', default2=False, copy=False)
+    garage = fields.Boolean(string='Garaje', default=False, copy=False)
     garden = fields.Boolean(string='Jardin', default=False, copy=False)
     garden_area = fields.Integer(string='Area del jardin (m)')
 
@@ -107,10 +111,12 @@ class Estate_Property(models.Model):
                 raise ValidationError('Una propiedad que ha sido cancelada no puede ser vendida')
             else:
                 record.state = 'sold'
+                record.is_sold_canceled = True
 
     def canceled_property(self):
         for record in self:
             record.state = 'canceled'
+            record.is_sold_canceled = True
 
     @api.depends('offer_ids.price')
     def _best_offer(self):

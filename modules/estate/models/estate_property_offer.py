@@ -7,13 +7,22 @@ from odoo.tools.float_utils import float_compare
 class Estate_Property_Offer(models.Model):
     _name = 'estate.property.offer'
     _description = 'Real Estate Property Offer'
+    _order = 'price desc'
 
     property_id = fields.Many2one(
         'estate.property',
         string='Property',
         required=True,
         ondelete='cascade'
-        )
+    )
+
+    property_type_id = fields.Many2one(
+        'estate.property.type',
+        string='Property type',
+        related='property_id.property_type_id',
+        store=True,
+        required=True
+    )
 
     name = fields.Char(string='Oferta de propiedad',
                        required=True,
@@ -45,6 +54,7 @@ class Estate_Property_Offer(models.Model):
         string='Status', copy=False
     )
 
+
     validity = fields.Integer(string='Valido',
                               required=False,
                               default=7
@@ -69,7 +79,8 @@ debe ser de miniamo: ''' + str(record.property_id.expected_price * 0.9))
             record.status = 'accepted'
             self.property_id.selling_price = record.price
             self.property_id.buyer_id = record.partner_id
-
+            record.property_id.state = 'offerAccepted'
+    
     @api.depends("property_id.selling_price")
     def refuse_property(self):
         for record in self:
