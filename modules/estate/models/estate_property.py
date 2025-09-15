@@ -136,3 +136,10 @@ class Estate_Property(models.Model):
         'check(expected_price > 0)',
         'Hola, el precio no puede ser negativo'
         )]
+    
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_if_state_property_is_not_new_canceled(self):
+        for r in self:
+            if not (r.state == 'New' or r.state == 'canceled'):
+                raise ValidationError("Solo se pueden eliminar propiedades con estado Nuevo o Cancelado")

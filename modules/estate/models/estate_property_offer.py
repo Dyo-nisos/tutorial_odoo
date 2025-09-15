@@ -20,8 +20,7 @@ class Estate_Property_Offer(models.Model):
         'estate.property.type',
         string='Property type',
         related='property_id.property_type_id',
-        store=True,
-        required=True
+        store=True
     )
 
     name = fields.Char(string='Oferta de propiedad',
@@ -71,6 +70,21 @@ class Estate_Property_Offer(models.Model):
                     )
 
     def accept_property(self):
+        '''Se crea una variable existing_accepted_offers, con self.env accedemos al modelo especificado
+        buscamos registros desde la base de datos y encontramos mientras la foranea de la tabla estate_property_offer
+        sea igual a los ids de '''
+        existing_accepted = self.search([
+            ('property_id', '=', self.property_id.id),
+            ('status', '=', 'accepted'),
+            ('id', '!=', self.id)
+        ])
+    
+        # 2. Si ya existe una oferta aceptada, mostrar error
+        if existing_accepted:
+            raise ValidationError(
+                "Ya se aceptó otra oferta para esta propiedad. "
+                "Solo puede haber una oferta aceptada por propiedad."
+            )
         for record in self:
             if float_compare(record.price, record.property_id.expected_price * 0.9,5) == -1:
                 raise ValidationError('''El precio debe ser de por lo
@@ -85,3 +99,11 @@ debe ser de miniamo: ''' + str(record.property_id.expected_price * 0.9))
     def refuse_property(self):
         for record in self:
             record.status = 'refused'
+    
+    @api.model
+    def create(self,vals):
+        for r in self:
+            if self.env['estate.property'].browse(vals['property_id']).expected_price * 0.9 > r.price:
+                raise ValidationError("El precio de oferta debe ser al menos del 90% del percio esperado")
+        return super(Estate_Property_Offer, self).create(vals)
+
