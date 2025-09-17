@@ -6,14 +6,14 @@
         <field name="res_model">estate.property.tag</field>
         <field name="view_mode">tree,form</field>
     </record>
-    
+
     <record id="tree_estate_property_tag_view" model="ir.ui.view">
         <field name="name">estate.property.tag.tree</field>
         <field name="model">estate.property.tag</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
-                <field name="color"/>
+                <field name="name" />
+                <field name="color" />
             </tree>
         </field>
     </record>
@@ -23,9 +23,9 @@
         <field name="arch" type="xml">
             <form string="Formulario">
                 <sheet>
-                    <field name="name"/>
-                    <field name="color"/>
-                </sheet>    
+                    <field name="name" string="Etiqueta" />
+                    <field name="color" string="Color" />
+                </sheet>
             </form>
         </field>
     </record>

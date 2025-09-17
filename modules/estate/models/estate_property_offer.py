@@ -107,3 +107,11 @@ debe ser de miniamo: ''' + str(record.property_id.expected_price * 0.9))
                 raise ValidationError("El precio de oferta debe ser al menos del 90% del percio esperado")
         return super(Estate_Property_Offer, self).create(vals)
 
+    def ver_relaciones(self):
+        for record in self:
+            print("ID de la propiedad:", record.property_id.id)
+            print("Tipo de propiedad:", record.property_type_id.name)
+            print("ID del partner:", record.partner_id.id)
+            print("Nombre del partner:", record.partner_id.name)
+            print("Precio esperado de la propiedad:", record.property_id.expected_price)
+            print("Precio de venta de la propiedad:", record.property_id.selling_price)

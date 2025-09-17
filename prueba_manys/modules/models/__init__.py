@@ -1,0 +1,1 @@
+from . import prueba_many2one

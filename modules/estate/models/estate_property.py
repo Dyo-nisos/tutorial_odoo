@@ -1,7 +1,34 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
+''' 
+Tabla Propiedad inmobiliaria
 
+Esto se representa de la siguiente forma:
+ id                 | integer                     |           | not null | nextval('estate_property_id_seq'::regclass)
+ bedrooms           | integer                     |           |          | 
+ living_area        | integer                     |           |          | 
+ facades            | integer                     |           |          | 
+ garden_area        | integer                     |           |          | 
+ create_uid         | integer                     |           |          | 
+ write_uid          | integer                     |           |          | 
+ name               | character varying           |           | not null | 
+ postcode           | character varying           |           |          | 
+ garden_orientation | character varying           |           |          | 
+ date_availability  | date                        |           |          | 
+ description        | text                        |           |          | 
+ garage             | boolean                     |           |          | 
+ garden             | boolean                     |           |          | 
+ create_date        | timestamp without time zone |           |          | 
+ write_date         | timestamp without time zone |           |          | 
+ expected_price     | double precision            |           | not null | 
+ selling_price      | double precision            |           |          | 
+ active             | boolean                     |           |          | 
+ state              | character varying           |           |          | 
+ property_type_ids  | integer                     |           |          | 
+ buyer_id           | integer                     |           |          | 
+ salesperson_id     | integer                     |           |          | 
+'''
 class Estate_Property(models.Model):
     _name = 'estate.property'
     _description = 'Real Estate Property'
@@ -19,10 +46,10 @@ class Estate_Property(models.Model):
     )
 
     buyer_id = fields.Many2one('res.partner',
-                               string="Comprador",
-                               copy=False,
-                               readonly=True
-                               )
+        string="Comprador",
+        copy=False,
+        readonly=True
+    )
 
     tag_ids = fields.Many2many('estate.property.tag',
                                string="Etiqueta",
@@ -33,21 +60,21 @@ class Estate_Property(models.Model):
     
 
     offer_ids = fields.One2many('estate.property.offer',
-                                inverse_name='property_id',
-                                string="Oferta",
-                                copy=False,
-                                )
+        inverse_name='property_id',
+        string="Oferta",
+        copy=False,
+    )
 
     salesperson_id = fields.Many2one('res.users',
-                                     string="Vendedor",
-                                     default=lambda self: self.env.user
-                                     )
+        string="Vendedor",
+        default=lambda self: self.env.user
+    )
 
     postcode = fields.Char(string='Codigo postal')
     date_availability = fields.Date(string='Disponible desde',
-                                    copy=False,
-                                    default=fields.Datetime.now
-                                    )
+        copy=False,
+        default=fields.Datetime.now
+    )
 
     expected_price = fields.Float(string='Precio esperado', required=True)
     selling_price = fields.Float(string='Precio de venta',
@@ -143,3 +170,24 @@ class Estate_Property(models.Model):
         for r in self:
             if not (r.state == 'New' or r.state == 'canceled'):
                 raise ValidationError("Solo se pueden eliminar propiedades con estado Nuevo o Cancelado")
+
+    def ver_relaciones(self):
+        for record in self:
+            print("ID del vendedor:", record.salesperson_id.id)
+            print("Nombre del vendedor:", record.salesperson_id.name)
+            print("Número de ofertas recibidas:", len(record.offer_ids))
+            print("Mejor oferta recibida:", record.best_offer)
+            if record.buyer_id:
+                print("ID del comprador:", record.buyer_id.id)
+                print("Nombre del comprador:", record.buyer_id.name)
+            else:
+                print("No hay comprador asociado a esta propiedad.")
+            print("Tipo de propiedad:", record.property_type_id.name)
+            print("Etiquetas asociadas:", record.tag_ids.mapped('name'))
+            print("Precio esperado de la propiedad:", record.expected_price)
+            print("Precio de venta de la propiedad:", record.selling_price)
+            print("Estado de la propiedad:", record.state)
+            print("Área total (habitable + jardín):", record.total_area)
+            print("¿La propiedad tiene jardín?:", "Sí" if record.garden else "No")
+            print("¿La propiedad tiene garaje?:", "Sí" if record.garage else "No")
+            print("-" * 40)  # Separador para claridad

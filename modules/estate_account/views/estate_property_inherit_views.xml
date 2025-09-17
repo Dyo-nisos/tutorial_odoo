@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="estate_property_form_action2" model="ir.ui.view">
+        <field name="name">estate.property.form.action</field>
+        <field name="model">estate.property</field>
+        <field name="inherit_id" ref="estate.estate_property_form_action" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_availability']" position="after">
+                <field name="move_type"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
