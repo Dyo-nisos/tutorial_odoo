@@ -137,8 +137,11 @@ class Estate_Property(models.Model):
             if record.state == 'canceled':
                 raise ValidationError('Una propiedad que ha sido cancelada no puede ser vendida')
             else:
-                record.state = 'sold'
-                record.is_sold_canceled = True
+                if record.state == 'offerAccepted':
+                    record.state = 'sold' 
+                    record.is_sold_canceled = True
+                else:
+                    raise ValidationError('Solo se pueden vender propiedades con oferta aceptada')
 
     def canceled_property(self):
         for record in self:
