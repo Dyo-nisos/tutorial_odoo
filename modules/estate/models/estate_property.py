@@ -161,7 +161,7 @@ class Estate_Property(models.Model):
     _sql_constraints = [(
         'checkear_expected_price',
         'check(expected_price > 0)',
-        'Hola, el precio no puede ser negativo'
+        'Hola, el precio no puede ser negativo o cero'
         )]
     
 
