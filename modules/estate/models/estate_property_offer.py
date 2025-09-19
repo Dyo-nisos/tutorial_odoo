@@ -29,7 +29,7 @@ class Estate_Property_Offer(models.Model):
                        copy=False
                        )
 
-    price = fields.Integer(string='Precio',
+    price = fields.Float(string='Precio',
                            required=True,
                            default=0,
                            copy=False,
@@ -87,6 +87,7 @@ class Estate_Property_Offer(models.Model):
             )
         for record in self:
             if float_compare(record.price, record.property_id.expected_price * 0.9,5) == -1:
+            # if float_compare(5.8,5.9,1) == -1:
                 raise ValidationError('''El precio debe ser de por lo
 menos mayor al el 90% del precio esperado
 debe ser de miniamo: ''' + str(record.property_id.expected_price * 0.9))
@@ -101,10 +102,17 @@ debe ser de miniamo: ''' + str(record.property_id.expected_price * 0.9))
             record.status = 'refused'
     
     @api.model
+    # self es el modelo, no un recordset
     def create(self,vals):
-        for r in self:
-            if self.env['estate.property'].browse(vals['property_id']).expected_price * 0.9 > r.price:
-                raise ValidationError("El precio de oferta debe ser al menos del 90% del percio esperado")
+        print(type(self.price))
+        print(vals['price'])
+        print("\n")
+        print(self.env['estate.property'].browse(vals['property_id']).expected_price)
+        property_objeto = self.env['estate.property'].browse(vals['property_id'])
+        property_objeto.state='offerReceived'
+        # if float_compare(property_objeto.expected_price * 0.9, 6) == -1:
+        if float_compare(property_objeto.expected_price * 0.9, vals['price'], 1) == 1:
+            raise ValidationError("El precio de oferta debe ser al menos del 90% del precio esperado")
         return super(Estate_Property_Offer, self).create(vals)
 
     def ver_relaciones(self):

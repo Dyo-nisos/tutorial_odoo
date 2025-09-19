@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+<record model="res.groups">:Se utiliza para CREAR un nuevo registro en la base de datos. 
+Es exactamente lo que quieres hacer: crear un grupo nuevo de cero. 
+Es la forma correcta.
+
+<xpath>: Se utiliza para MODIFICAR una vista XML existente (como un menú, un formulario o una
+lista). 
+    Por ejemplo, si quisieras añadir un nuevo campo a la vista de usuario para asignar tu grupo,
+usarías 
+    un <xpath> dentro de una definición de <record model="ir.ui.view">.
+-->
+
+<odoo>
+    <!-- <data noupdate="0"> -->
+        <record id="invoice_inherit_group_invoice_edit_sale_linked" model="res.groups">
+            <field name="name">Editar facturas</field>
+            <field name="category_id" ref="base.module_category_sales_sales" />
+        </record>
+    <!-- </data> -->
+</odoo>
