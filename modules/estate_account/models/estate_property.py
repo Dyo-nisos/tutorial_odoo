@@ -1,19 +1,19 @@
 from odoo import fields, models, api
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError
 
 class InheritedModel(models.Model):
     _inherit = "estate.property"
     _description = "Inherited Model"
 
     move_type = fields.Selection(selection=[
-            ('entry', 'Journal Entry'),
-            ('out_invoice', 'Customer Invoice'),
-            ('out_refund', 'Customer Credit Note'),
-            ('in_invoice', 'Vendor Bill'),
-            ('in_refund', 'Vendor Credit Note'),
-            ('out_receipt', 'Sales Receipt'),
-            ('in_receipt', 'Purchase Receipt'),
-        ], string='Type', store=True, index=True, tracking=True,
+            ('entry', 'Asiento de diario'),
+            ('out_invoice', 'Factura de cliente'),
+            ('out_refund', 'Nota de crédito de cliente'),
+            ('in_invoice', 'Factura de proveedor'),
+            ('in_refund', 'Nota de crédito de proveedor'),
+            ('out_receipt', 'Recibo de ventas'),
+            ('in_receipt', 'Recibo de compras'),
+        ], string='Tipo de movimiento', store=True, index=True, tracking=True,
         default="entry", change_default=True)
 
 
@@ -29,7 +29,7 @@ class InheritedModel(models.Model):
             ], limit=1).id
             
             if not account_id:
-                raise ValidationError("No se encontró una cuenta de ingresos configurada")
+                raise UserError("No se encontró una cuenta de ingresos configurada")
             oferta = r.mapped('offer_ids.price')
             print(str(type(oferta)) + " : " + str(oferta))
             invoice_vals = {

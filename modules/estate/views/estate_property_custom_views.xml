@@ -22,9 +22,10 @@
         <field name="model">estate.property</field>
         <field name="arch" type="xml">
             <search string="Buscar">
-            <separator/>
+                
+                <separator/>
                 <filter name="available" string="Disponible" domain="[('active','=','True')]"/>
-            <separator/>
+                <separator/>
                 <field name="name" string="Casa"/>
                 <field name="postcode" string="Codigo postal"/>
                 <field name="expected_price" string="Precio esperado"/>
@@ -41,11 +42,15 @@
             </search>
         </field>
     </record>
-
+    
     <record id="estate_property_tree_action" model="ir.ui.view">
         <field name="name">estate.property.tree.action</field>
         <field name="model">estate.property</field>
         <field name="arch" type="xml">
+            <!-- <data> -->
+                <!-- <button name="ver_informacion" type="object" string="Ver relaciones"/> -->
+            <!-- </data> -->
+            
             <tree string="Propiedad inmobiliaria" 
                 decoration-muted="state=='sold'"
                 decoration-success="state=='offerReceived' or state=='offerAccepted'"
@@ -76,7 +81,8 @@
                 <header>
                     <button name="sold_property" type="object" string="Vender" invisible="is_sold_canceled"/>           
                     <button name="canceled_property" type="object" string="Cancelar" invisible="is_sold_canceled"/>
-                    <button name="ver_relaciones" type="object" string="Ver relaciones"/>           
+                    <!-- Comentar esta linea para evitar incoherencias -->
+                    <!-- <button name="ver_relaciones" type="object" string="Ver relaciones"/> -->
                     <field name="state" widget="statusbar" statusbar_visible="New,offerReceived,offerAccepted,sold,canceled"/>
                 </header>
                 <sheet>

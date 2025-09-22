@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 from datetime import timedelta
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.tools.float_utils import float_compare
 
 
@@ -70,7 +70,7 @@ class Estate_Property_Offer(models.Model):
                     )
 
     def accept_property(self):
-        '''Se crea una variable existing_accepted_offers, con self.env accedemos al modelo especificado
+        '''Se crea una variable existing_accepted, con self.env accedemos al modelo especificado
         buscamos registros desde la base de datos y encontramos mientras la foranea de la tabla estate_property_offer
         sea igual a los ids de '''
         existing_accepted = self.search([
@@ -78,17 +78,16 @@ class Estate_Property_Offer(models.Model):
             ('status', '=', 'accepted'),
             ('id', '!=', self.id)
         ])
-    
-        # 2. Si ya existe una oferta aceptada, mostrar error
+        
         if existing_accepted:
-            raise ValidationError(
+            raise UserError(
                 "Ya se aceptó otra oferta para esta propiedad. "
                 "Solo puede haber una oferta aceptada por propiedad."
             )
         for record in self:
             if float_compare(record.price, record.property_id.expected_price * 0.9,5) == -1:
             # if float_compare(5.8,5.9,1) == -1:
-                raise ValidationError('''El precio debe ser de por lo
+                raise UserError('''Hola si El precio debe ser de por lo
 menos mayor al el 90% del precio esperado
 debe ser de miniamo: ''' + str(record.property_id.expected_price * 0.9))
             record.status = 'accepted'
@@ -112,7 +111,8 @@ debe ser de miniamo: ''' + str(record.property_id.expected_price * 0.9))
         property_objeto.state='offerReceived'
         # if float_compare(property_objeto.expected_price * 0.9, 6) == -1:
         if float_compare(property_objeto.expected_price * 0.9, vals['price'], 1) == 1:
-            raise ValidationError("El precio de oferta debe ser al menos del 90% del precio esperado")
+            raise UserError("El precio de oferta debe ser al menos del 90% del precio esperado\n"
+                            "minimo: " + str(property_objeto.expected_price * 0.9))
         return super(Estate_Property_Offer, self).create(vals)
 
     def ver_relaciones(self):

@@ -1,5 +1,6 @@
+import time
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError
 
 ''' 
 Tabla Propiedad inmobiliaria
@@ -135,13 +136,13 @@ class Estate_Property(models.Model):
     def sold_property(self):
         for record in self:
             if record.state == 'canceled':
-                raise ValidationError('Una propiedad que ha sido cancelada no puede ser vendida')
+                raise UserError('Una propiedad que ha sido cancelada no puede ser vendida')
             else:
                 if record.state == 'offerAccepted':
                     record.state = 'sold' 
                     record.is_sold_canceled = True
                 else:
-                    raise ValidationError('Solo se pueden vender propiedades con oferta aceptada')
+                    raise UserError('Solo se pueden vender propiedades con oferta aceptada')
 
     def canceled_property(self):
         for record in self:
@@ -161,21 +162,41 @@ class Estate_Property(models.Model):
     Constraints del modelo
     """
 
-    _sql_constraints = [(
-        'checkear_expected_price',
-        'check(expected_price > 0)',
-        'Hola, el precio no puede ser negativo o cero'
-        )]
-    
+    _sql_constraints = [
+        (
+            'checkear_expected_price',
+            'CHECK(expected_price > 0)',
+            'Hola, el precio no puede ser negativo o cero'
+        ),
+        (
+            'checkear_facades', 
+            'CHECK(facades >= 0)',
+            'Hola, la fachada no puede ser negativa'
+        ),
+        (
+            'checkear_living_area',
+            'CHECK(living_area > 0)',
+            'Hola, el área habitable no puede ser negativa o cero'
+        ),
+    ]
 
     @api.ondelete(at_uninstall=False)
     def _unlink_if_state_property_is_not_new_canceled(self):
         for r in self:
             if not (r.state == 'New' or r.state == 'canceled'):
-                raise ValidationError("Solo se pueden eliminar propiedades con estado Nuevo o Cancelado")
+                raise UserError("Solo se pueden eliminar propiedades con estado Nuevo o Cancelado")
 
     def ver_relaciones(self):
+        print("Self fuera del for:", self)
         for record in self:
+            print("Valores de registro")
+            print("Contexto:", self.env.context)
+            print("Active ID:", self.env.context.get('active_id'))
+            print("Active Model:", self.env.context.get('active_model'))
+            print("Active_id", self.env.context.get('active_id'))
+            print("Self:", self)
+            print("Record:", record)
+            print("Self type:", type(record))
             print("ID del vendedor:", record.salesperson_id.id)
             print("Nombre del vendedor:", record.salesperson_id.name)
             print("Número de ofertas recibidas:", len(record.offer_ids))
@@ -194,3 +215,35 @@ class Estate_Property(models.Model):
             print("¿La propiedad tiene jardín?:", "Sí" if record.garden else "No")
             print("¿La propiedad tiene garaje?:", "Sí" if record.garage else "No")
             print("-" * 40)  # Separador para claridad
+            
+            print("Ver Informacion estate_property")
+        print("Modelo estate.property con search", self.env['estate.property'].search([]))
+        print("Modelo estate.property con browse", self.env['estate.property'].browse([14]))
+        print("Modelo estate.property con filter", self.env['estate.property'].search([]).filtered(lambda r: r.id == 14))
+        print("Tiempo entre search/filtered y browse")
+        self.test_performance()
+            
+    def ver_informacion(self):
+        print("Self fuera del for:", self)
+        for record in self:
+            print("Valores de registro")
+            print("Self:", self)
+            print("Record:", record)
+            print("Self type:", type(self))
+            
+            
+    def test_performance(self):
+        # Con browse (más rápido)
+        start = time.time()
+        for i in range(1000):
+            record = self.env['estate.property'].browse(14)
+        browse_time = time.time() - start
+        
+        # Con search (más lento)
+        start = time.time()
+        for i in range(1000):
+            record = self.env['estate.property'].search([('id', '=', 14)])
+        search_time = time.time() - start
+        
+        print(f"Browse: {browse_time:.4f}s")
+        print(f"Search: {search_time:.4f}s")
