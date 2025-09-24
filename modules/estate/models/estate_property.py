@@ -53,9 +53,9 @@ class Estate_Property(models.Model):
     )
 
     tag_ids = fields.Many2many('estate.property.tag',
-                               string="Etiqueta",
-                               copy=False
-                               )
+        string="Etiqueta",
+        copy=False
+    )
     
     is_sold_canceled = fields.Boolean(string='sold_canceled', default=False)
     
@@ -186,42 +186,66 @@ class Estate_Property(models.Model):
             if not (r.state == 'New' or r.state == 'canceled'):
                 raise UserError("Solo se pueden eliminar propiedades con estado Nuevo o Cancelado")
 
+
+    def init(self):
+        self.env['estate.property'].search([('state','=','canceled')]).write({'name': 'Propiedad Cancelada'})
+        print("Hola me ejecute init")
+
+
+    # @api.model #funcionara? si
     def ver_relaciones(self):
+        print("Hola me z")
         print("Self fuera del for:", self)
-        for record in self:
-            print("Valores de registro")
-            print("Contexto:", self.env.context)
-            print("Active ID:", self.env.context.get('active_id'))
-            print("Active Model:", self.env.context.get('active_model'))
-            print("Active_id", self.env.context.get('active_id'))
-            print("Self:", self)
-            print("Record:", record)
-            print("Self type:", type(record))
-            print("ID del vendedor:", record.salesperson_id.id)
-            print("Nombre del vendedor:", record.salesperson_id.name)
-            print("Número de ofertas recibidas:", len(record.offer_ids))
-            print("Mejor oferta recibida:", record.best_offer)
-            if record.buyer_id:
-                print("ID del comprador:", record.buyer_id.id)
-                print("Nombre del comprador:", record.buyer_id.name)
-            else:
-                print("No hay comprador asociado a esta propiedad.")
-            print("Tipo de propiedad:", record.property_type_id.name)
-            print("Etiquetas asociadas:", record.tag_ids.mapped('name'))
-            print("Precio esperado de la propiedad:", record.expected_price)
-            print("Precio de venta de la propiedad:", record.selling_price)
-            print("Estado de la propiedad:", record.state)
-            print("Área total (habitable + jardín):", record.total_area)
-            print("¿La propiedad tiene jardín?:", "Sí" if record.garden else "No")
-            print("¿La propiedad tiene garaje?:", "Sí" if record.garage else "No")
-            print("-" * 40)  # Separador para claridad
+        # print("Self fuera del for:", x)
+        # for record in self:
+        #     print("Valores de registro")
+        #     prop = self.env['estate.property'].browse(record.id)
+        #     print("Propiedad:", prop.name)
+        #     print("Contexto:", self.env.context)
+        #     print("Active ID:", self.env.context.get('active_id'))
+        #     print("Active Model:", self.env.context.get('active_model'))
+        #     print("Active_id", self.env.context.get('active_id'))
+        #     print("Self:", self)
+        #     print("Record:", record)
+        #     print("Self type:", type(record))
+        #     print("ID del vendedor:", record.salesperson_id.id)
+        #     print("Nombre del vendedor:", record.salesperson_id.name)
+        #     print("Número de ofertas recibidas:", len(record.offer_ids))
+        #     print("Mejor oferta recibida:", record.best_offer)
+        #     if record.buyer_id:
+        #         print("ID del comprador:", record.buyer_id.id)
+        #         print("Nombre del comprador:", record.buyer_id.name)
+        #     else:
+        #         print("No hay comprador asociado a esta propiedad.")
+        #     print("Tipo de propiedad:", record.property_type_id.name)
+        #     print("Etiquetas asociadas:", record.tag_ids.mapped('name'))
+        #     print("Precio esperado de la propiedad:", record.expected_price)
+        #     print("Precio de venta de la propiedad:", record.selling_price)
+        #     print("Estado de la propiedad:", record.state)
+        #     print("Área total (habitable + jardín):", record.total_area)
+        #     print("¿La propiedad tiene jardín?:", "Sí" if record.garden else "No")
+        #     print("¿La propiedad tiene garaje?:", "Sí" if record.garage else "No")
+        #     print("-" * 40)
             
-            print("Ver Informacion estate_property")
-        print("Modelo estate.property con search", self.env['estate.property'].search([]))
-        print("Modelo estate.property con browse", self.env['estate.property'].browse([14]))
-        print("Modelo estate.property con filter", self.env['estate.property'].search([]).filtered(lambda r: r.id == 14))
-        print("Tiempo entre search/filtered y browse")
-        self.test_performance()
+        #     print("Ver Informacion estate_property")
+        # print("Modelo estate.property con search", self.env['estate.property'].search(['state','=', 'canceled']))
+        # for r in self:
+        self.env['estate.property'].search([('state','=','canceled')]).write({'name': 'Propiedad Cancelada'})
+        
+        print("Este es el contexto ", self.env.context['params'])
+        print("Ingresar aqui lo que es ", type(self.env))
+        # prop_canc = self.env['estate.property'].search([('state','=','canceled')])
+        # print("prop_canc", prop_canc)
+        # if not prop_canc:
+        #     raise UserError("No hay propiedades canceladas")
+        # for p in prop_canc:
+        #     print("p", p)
+        #     p.write({'name': 'Propiedad Cancelada'})
+        #
+        # print("Modelo estate.property con browse", self.env['estate.property'].browse([14])).mapped()
+        # print("Modelo estate.property con filter", self.env['estate.property'].search([]).filtered(lambda r: r.id == 14))
+        # print("Tiempo entre search/filtered y browse")
+        # self.test_performance()
             
     def ver_informacion(self):
         print("Self fuera del for:", self)
@@ -230,7 +254,7 @@ class Estate_Property(models.Model):
             print("Self:", self)
             print("Record:", record)
             print("Self type:", type(self))
-            
+
             
     def test_performance(self):
         # Con browse (más rápido)

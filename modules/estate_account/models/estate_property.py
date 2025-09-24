@@ -21,17 +21,21 @@ class InheritedModel(models.Model):
     def sold_property(self):
         print("hola")
         for r in self:
-                    
+            
             # Obtener la cuenta contable de ingresos por defecto
             account_id = self.env['account.account'].search([
                 ('account_type', '=', 'income'),
                 ('company_id', '=', self.env.company.id)
             ], limit=1).id
+            print("Account ID:", account_id)
+            print("Company ID:", self.env.company.id)
             
             if not account_id:
                 raise UserError("No se encontró una cuenta de ingresos configurada")
             oferta = r.mapped('offer_ids.price')
             print(str(type(oferta)) + " : " + str(oferta))
+            if not oferta:
+                raise UserError("No hay ofertas para esta propiedad")
             invoice_vals = {
                 'partner_id': r.buyer_id.id,
                 'move_type': r.move_type,

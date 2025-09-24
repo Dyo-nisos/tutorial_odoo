@@ -82,7 +82,7 @@
                     <button name="sold_property" type="object" string="Vender" invisible="is_sold_canceled"/>           
                     <button name="canceled_property" type="object" string="Cancelar" invisible="is_sold_canceled"/>
                     <!-- Comentar esta linea para evitar incoherencias -->
-                    <!-- <button name="ver_relaciones" type="object" string="Ver relaciones"/> -->
+                    <button name="ver_relaciones" type="object" string="Ver relaciones"/>
                     <field name="state" widget="statusbar" statusbar_visible="New,offerReceived,offerAccepted,sold,canceled"/>
                 </header>
                 <sheet>

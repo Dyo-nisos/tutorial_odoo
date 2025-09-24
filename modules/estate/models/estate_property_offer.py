@@ -15,6 +15,26 @@ class Estate_Property_Offer(models.Model):
         required=True,
         ondelete='cascade'
     )
+    
+#     Related fields
+# A special case of computed fields are related (proxy) fields, which provide the value of a sub-field on the current record. They are defined by setting the related parameter and like regular computed fields they can be stored:
+
+# nickname = fields.Char(related='user_id.partner_id.name', store=True)
+# The value of a related field is given by following a sequence of relational fields and reading a field on the reached model. The complete sequence of fields to traverse is specified by the related attribute.
+
+# Some field attributes are automatically copied from the source field if they are not redefined: string, help, required (only if all fields in the sequence are required), groups, digits, size, translate, sanitize, selection, comodel_name, domain, context. All semantic-free attributes are copied from the source field.
+
+# By default, related fields are:
+
+# not stored
+
+# not copied
+
+# readonly
+
+# computed in superuser mode
+
+# Add the attribute store=True to make it stored, just like computed fields. Related fields are automatically recomputed when their dependencies are modified.
 
     property_type_id = fields.Many2one(
         'estate.property.type',
@@ -101,19 +121,28 @@ debe ser de miniamo: ''' + str(record.property_id.expected_price * 0.9))
             record.status = 'refused'
     
     @api.model
-    # self es el modelo, no un recordset
+    # # self es el modelo, no un recordset
     def create(self,vals):
-        print(type(self.price))
-        print(vals['price'])
-        print("\n")
-        print(self.env['estate.property'].browse(vals['property_id']).expected_price)
+    #     print(type(self.price))
+    #     print(vals['price'])
+    #     print("\n")
+    #     print(self.env['estate.property'].browse(vals['property_id']).expected_price)
         property_objeto = self.env['estate.property'].browse(vals['property_id'])
         property_objeto.state='offerReceived'
-        # if float_compare(property_objeto.expected_price * 0.9, 6) == -1:
-        if float_compare(property_objeto.expected_price * 0.9, vals['price'], 1) == 1:
-            raise UserError("El precio de oferta debe ser al menos del 90% del precio esperado\n"
-                            "minimo: " + str(property_objeto.expected_price * 0.9))
+    #     # if float_compare(property_objeto.expected_price * 0.9, 6) == -1:
+    #     if float_compare(property_objeto.expected_price * 0.9, vals['price'], 1) == 1:
+    #         raise UserError("El precio de oferta debe ser al menos del 90% del precio esperado\n"
+    #                         "minimo: " + str(property_objeto.expected_price * 0.9))
         return super(Estate_Property_Offer, self).create(vals)
+    
+    #OJO: Una oferta aceptada no puede ser editada
+    
+    @api.constrains('price')
+    def _check_price(self):
+        for record in self:
+            if float_compare(record.property_id.expected_price * 0.9, record.price, 1) == 1:
+                raise UserError("El precio de oferta debe ser al menos del 90% del precio esperado\n"
+                                "minimo: " + str(record.property_id.expected_price * 0.9))
 
     def ver_relaciones(self):
         for record in self:
