@@ -11,6 +11,15 @@
         <field name="model">estate.property.type</field>
         <field name="arch" type="xml">
             <form string="Formulario">
+                <header>
+                    <button 
+                    name="%(action_estate_property_offer_tree)d"
+                    type="action"
+                    string="Ver Ofertas"
+                    context="{'search_default_property_type_id': active_id}"
+                    domain="[('property_type_id', '=', active_id)]"/>
+                </header>
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="property_ids">
                     <tree>

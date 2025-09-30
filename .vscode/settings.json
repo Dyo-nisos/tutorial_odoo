@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "/home/user/odoo"
+    ],
+    "python.pythonPath": "/home/user/odoo/venv-odoo17"
+}
